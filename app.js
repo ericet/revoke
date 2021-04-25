@@ -1,25 +1,40 @@
 steem.api.setOptions({ url: 'https://api.steem.buzz' });
-const revokeList = ['steemcn.app', 'peakmonsters.app', 'buildteam', 'busy.app', 'dclick.app', 'dpoll.xyz', 'esteem-app', 'partiko-steemcon', 'steemauto', 'tasteem.app', 'nextcolony', 'share2steem', 'steemhunt.com', 'steemstem-app', 'fundition.app', 'trailbase', 'typeearn', 'smartsteem', 'steemknights',"dlive.app","dreply","ntopaz-artisteem","steem-recipe"];
+const steemRevokeList = ['steemcn.app', 'peakmonsters.app', 'buildteam', 'busy.app', 'dclick.app', 'dpoll.xyz', 'esteem-app', 'partiko-steemcon', 'steemauto', 'tasteem.app', 'nextcolony', 'share2steem', 'steemhunt.com', 'steemstem-app', 'fundition.app', 'trailbase', 'typeearn', 'smartsteem', 'steemknights', "dlive.app", "dreply", "ntopaz-artisteem", "steem-recipe"];
+const hiveRevokeList = ['cn-trail', 'busy.app', 'partiko-steemcon', 'steem2hive', 'steemcn.app', 'dclick.app', 'dlive.app', 'dpoll.xyz', 'dreply', 'fundition.app', 'ntopaz-artisteem', 'steem-recipe', 'steemhunt.com', 'steempeak.app', 'tasteem.app', 'typeearn', 'ulogs.app', 'wherein-io', 'drugwars.app', 'esteem-app', 'letseat.app', 'steemgg.app'];;
+let previousChain = "STEEM";
 
 $(document).ready(async function () {
+    $('#chain').on('click', async function (e) {
+        e.preventDefault();
+        let chain = document.getElementById('chain').value;
+        let username = $('#username').val();
+        if (previousChain !== chain && username !== '') {
+            console.log(chain)
+            let account = await getAccount([username], chain);
+            getAuthorizedListHtlm(account, chain);
+        }
+        previousChain = chain;
+    })
     $('#username').on('input', async function () {
         document.getElementById('search').disabled = true;
-        let steemId = $('#username').val();
-        console.log(steemId)
+        let chain = document.getElementById('chain').value;
+        let username = $('#username').val();
         $('div#authorized_app').html('');
-        let account = await getAccount([steemId]);
-        getAuthorizedListHtlm(account);
+        let account = await getAccount([username], chain);
+        getAuthorizedListHtlm(account, chain);
     });
     $('#revoke').submit(async function (e) {
         e.preventDefault();
-
         let authorizedList = [];
         let revokeList = [];
         let hasKeychain = false;
         let activeKey = $('#active_key').val().trim();
-        let steemId = $('#username').val();
-        let account = await getAccount([steemId]);
-        if (window.steem_keychain) {
+        let username = $('#username').val();
+        let chain = document.getElementById('chain').value;
+        let account = await getAccount([username],chain);
+        if (chain === 'STEEM' && window.steem_keychain) {
+            hasKeychain = true;
+        } else if (chain === 'HIVE' && window.hive_keychain) {
             hasKeychain = true;
         }
         if (activeKey == '' && !hasKeychain) {
@@ -35,24 +50,24 @@ $(document).ready(async function () {
             revokeList.push($(this).val());
         });
 
-        updateAccountOperation(account, authorizedList, revokeList, hasKeychain, activeKey)
+        updateAccountOperation(account, authorizedList, revokeList, hasKeychain, activeKey,chain)
     });
 
 });
-async function getAuthorizedListHtlm(account) {
+async function getAuthorizedListHtlm(account, chain) {
     if (account !== undefined) {
         let authorizedList = await getAuthorizedList(account.posting.account_auths);
         let htmlString = `<table class="table is-bordered">
         <thead>
           <tr class="th is-selected">
-            <th scope="col" style="text-align:center">App</th>
+            <th scope="col" style="text-align:center">${chain} App</th>
             <th scope="col" style="text-align:center">Revoke</th>
           </tr>
         </thead>
         <tbody>
         `;
         for (let app of authorizedList) {
-            if (revokeList.includes(app[0])) {
+            if (steemRevokeList.includes(app[0])) {
                 htmlString += `<tr><td style="text-align:center"> <label class="form-check-label is-3" for="${app[0]}">${app[0]}</label></td>
                 <td style="text-align:center"><div class="form-check">
                 <input name="type" type="checkbox" class="big-checkbox" value="${app[0]}" id="${app[0]}" checked>
@@ -75,7 +90,7 @@ async function getAuthorizedListHtlm(account) {
         }
     }
 }
-function updateAccountOperation(account, newAuthorizedList, revokeList, hasKeychain, activeKey) {
+function updateAccountOperation(account, newAuthorizedList, revokeList, hasKeychain, activeKey,chain) {
     let operations = [];
     let op = [
         'account_update', {
@@ -90,7 +105,7 @@ function updateAccountOperation(account, newAuthorizedList, revokeList, hasKeych
         }
     ]
     operations.push(op);
-    sendOperations(operations, activeKey, revokeList, hasKeychain);
+    sendOperations(operations, activeKey, revokeList, hasKeychain,chain);
 }
 
 function getAuthorizedList(account_auths) {
@@ -104,23 +119,33 @@ function getAuthorizedList(account_auths) {
     });
 }
 
-function getAccount(accounts) {
+function getAccount(accounts, chain) {
     return new Promise((resolve, reject) => {
-        steem.api.getAccounts(accounts, function (err, result) {
-            if (!err) {
-                resolve(result[0]);
-            } else {
-                reject(err);
-            }
-        });
+        if (chain == 'STEEM') {
+            steem.api.getAccounts(accounts, function (err, result) {
+                if (!err) {
+                    resolve(result[0]);
+                } else {
+                    reject(err);
+                }
+            });
+        } else if (chain == 'HIVE') {
+            hive.api.getAccounts(accounts, function (err, result) {
+                if (!err) {
+                    resolve(result[0]);
+                } else {
+                    reject(err);
+                }
+            });
+        }
     });
 }
 
 
-function sendOperations(operations, active_key, revokeList, hasKeychain) {
-    let steemId = $('#username').val();
-    if (hasKeychain && active_key === '') {
-        steem_keychain.requestBroadcast(steemId, operations, "Active", async function (response) {
+function sendOperations(operations, active_key, revokeList, hasKeychain, chain) {
+    let username = $('#username').val();
+    if (hasKeychain && active_key === '' && chain==='STEEM') {
+        steem_keychain.requestBroadcast(username, operations, "Active", async function (response) {
             if (response.success) {
                 $('div#notification').html(`<div class="alert alert-info alert-dismissible fade show" role="alert">
             You've revoked <strong>${revokeList}</strong>
@@ -128,8 +153,8 @@ function sendOperations(operations, active_key, revokeList, hasKeychain) {
               <span aria-hidden="true">&times;</span>
             </button>
           </div>`);
-                let account = await getAccount([steemId]);
-                getAuthorizedListHtlm(account);
+                let account = await getAccount([username],chain);
+                getAuthorizedListHtlm(account, chain);
             } else {
                 $('div#notification').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
                 ${err.message}
@@ -140,7 +165,30 @@ function sendOperations(operations, active_key, revokeList, hasKeychain) {
             }
         });
 
-    } else {
+    }
+    else if (hasKeychain && active_key === '' && chain==='HIVE') {
+        hive_keychain.requestBroadcast(username, operations, "Active", async function (response) {
+            if (response.success) {
+                $('div#notification').html(`<div class="alert alert-info alert-dismissible fade show" role="alert">
+            You've revoked <strong>${revokeList}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>`);
+                let account = await getAccount([username],chain);
+                getAuthorizedListHtlm(account, chain);
+            } else {
+                $('div#notification').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${err.message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>`);
+            }
+        });
+
+    }
+    else {
         steem.broadcast.send(
             { operations: operations, extensions: [] },
             { active: active_key },
@@ -152,9 +200,9 @@ function sendOperations(operations, active_key, revokeList, hasKeychain) {
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>`);
-                    let steemId = $('#username').val();
-                    let account = await getAccount([steemId]);
-                    getAuthorizedListHtlm(account);
+                    let username = $('#username').val();
+                    let account = await getAccount([username],chain);
+                    getAuthorizedListHtlm(account, chain);
                 } else {
                     $('div#notification').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
                 ${err.message}

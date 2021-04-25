@@ -141,13 +141,26 @@
                                 <div class="colum">
                                     <p class="control has-icons-left">
                                         <input class="input is-medium text-lowercase" size="10" type="text"
-                                            placeholder="STEEM ID" id="username">
+                                            placeholder="STEEM/HIVE ID" id="username">
                                         <span class="icon is-small is-left">
                                             <i class="far fa-user"></i>
                                         </span>
                                     </p>
 
                                 </div>
+                                <div class="control has-icons-left">
+                                    <div class="select is-medium">
+                                      <select id="chain">
+                                        <option selected>STEEM</option>
+                                        <option>HIVE</option>
+                                      </select>
+                                    </div>
+                                    <span class="icon is-medium is-left">
+                                      <i class="fas fa-globe"></i>
+                                    </span>
+                                  </div>
+                            </div>
+                                <div class="field has-addons">
                                 <div class="colum">
                                     <p class="control has-icons-left">
                                         <input class="input is-medium" size="50"
@@ -187,6 +200,7 @@
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js"></script>
     <script src="app.js"></script>
 
 </body>

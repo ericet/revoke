@@ -1,5 +1,5 @@
 steem.api.setOptions({ url: 'https://api.steem.buzz' });
-const revokeList = ['steemcn.app', 'peakmonsters.app', 'buildteam', 'busy.app', 'dclick.app', 'dpoll.xyz', 'esteem-app', 'partiko-steemcon', 'steemauto', 'tasteem.app', 'nextcolony', 'share2steem', 'steemhunt.com', 'steemstem-app', 'fundition.app', 'trailbase', 'typeearn', 'smartsteem', 'steemknights'];
+const revokeList = ['steemcn.app', 'peakmonsters.app', 'buildteam', 'busy.app', 'dclick.app', 'dpoll.xyz', 'esteem-app', 'partiko-steemcon', 'steemauto', 'tasteem.app', 'nextcolony', 'share2steem', 'steemhunt.com', 'steemstem-app', 'fundition.app', 'trailbase', 'typeearn', 'smartsteem', 'steemknights',"dlive.app","dreply","ntopaz-artisteem","steem-recipe"];
 
 $(document).ready(async function () {
     $('#username').on('input', async function () {

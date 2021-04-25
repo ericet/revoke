@@ -120,9 +120,8 @@ function getAccount(accounts) {
 function sendOperations(operations, active_key, revokeList, hasKeychain) {
     let steemId = $('#username').val();
     if (hasKeychain && active_key === '') {
-        steem_keychain.requestBroadcast(steemId, operations, "Active", async function (err, result) {
-            console.log(err,result);
-            if (result && !err) {
+        steem_keychain.requestBroadcast(steemId, operations, "Active", async function (response) {
+            if (response.success) {
                 $('div#notification').html(`<div class="alert alert-info alert-dismissible fade show" role="alert">
             You've revoked <strong>${revokeList}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">

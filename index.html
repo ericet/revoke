@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <title>One-Click Revoke All</title>
+    <style>
+        input[type="checkbox"] {
+            -webkit-appearance: initial;
+            appearance: initial;
+            background: gray;
+            width: 40px;
+            height: 40px;
+            border: none;
+            position: relative;
+        }
+
+        input[type="checkbox"]:checked {
+            background: red;
+        }
+
+        input[type="checkbox"]:checked:after {
+            /* Heres your symbol replacement */
+            content: "X";
+            color: #fff;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            /*
+     * If you want to fully change the check appearance, use the following:
+     * content: " ";
+     * width: 100%;
+     * height: 100%;
+     * background: blue;
+     * top: 0;
+     * left: 0;
+     */
+        }
+
+        .names {
+            font-weight: bold;
+            font-size: large;
+        }
+
+        .Site-content {
+            flex: 1;
+        }
+
+        .loader {
+            margin: auto;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .row {
+            display: flex;
+            margin: 0px auto;
+            max-width: 800px;
+        }
+
+        .column {
+            flex: 40%;
+            padding: 10px;
+        }
+
+        .mainText {
+            text-align: center;
+            font-size: 3vw;
+            font-family: fantasy;
+            font-weight: bold;
+        }
+
+        .main {
+            font-size: 15px;
+            text-align: left;
+            padding: 2px;
+            margin-top: 3px;
+            border-bottom: 1px solid #f1f1f1;
+            width: 100%
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .big-checkbox {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+
+<body style="font-family:Verdana;">
+
+    <div class="Site-content">
+
+        <div style="text-align: center;">
+            <a href="#" style="display: inline-block;">
+                <img src="https://cdn.pixabay.com/photo/2017/10/15/15/22/shield-2854067_960_720.jpg" height="100px"
+                    style="border-radius: 50%;" width="400px">
+            </a>
+            <p>
+            <h1 class="title is-2" style="display: inline;">One-Click Revoke All</h1>
+            <h1 class="title is-5" style="display: inline;">by <a href="https://steem.buzz/@ericet" target="_blank"
+                    rel="nofollow"">@ericet</a></h1>
+        </p>
+            <br>
+
+        </div>
+
+        <div class=" content column is-half is-offset-one-quarter">
+                    <div id="notification"></div>
+                    <div class="control">
+                        <form id="revoke" autocomplete="off">
+                            <div class="field has-addons">
+                                <div class="colum">
+                                    <p class="control has-icons-left">
+                                        <input class="input is-medium text-lowercase" size="10" type="text"
+                                            placeholder="STEEM ID" id="username">
+                                        <span class="icon is-small is-left">
+                                            <i class="far fa-user"></i>
+                                        </span>
+                                    </p>
+
+                                </div>
+                                <div class="colum">
+                                    <p class="control has-icons-left">
+                                        <input class="input is-medium" size="50"
+                                            placeholder="Private Active Key/Leave blank to use keychain"
+                                            id="active_key">
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-key"></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <button class="button is-danger is-medium" type="sumbit" id="search"
+                                    disabled>Revoke</button>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div style="margin-top:1%">
+
+                        <div id='authorized_app'></div>
+
+                    </div>
+
+        </div>
+
+
+
+
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"></script>
+    <script src="app.js"></script>
+
+</body>
+
+</html>

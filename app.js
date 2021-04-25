@@ -1,6 +1,6 @@
 steem.api.setOptions({ url: 'https://api.steem.buzz' });
-const steemRevokeList = ['steemcn.app', 'peakmonsters.app', 'buildteam', 'busy.app', 'dclick.app', 'dpoll.xyz', 'esteem-app', 'partiko-steemcon', 'steemauto', 'tasteem.app', 'nextcolony', 'share2steem', 'steemhunt.com', 'steemstem-app', 'fundition.app', 'trailbase', 'typeearn', 'smartsteem', 'steemknights', "dlive.app", "dreply", "ntopaz-artisteem", "steem-recipe"];
-const hiveRevokeList = ['cn-trail', 'busy.app', 'partiko-steemcon', 'steem2hive', 'steemcn.app', 'dclick.app', 'dlive.app', 'dpoll.xyz', 'dreply', 'fundition.app', 'ntopaz-artisteem', 'steem-recipe', 'steemhunt.com', 'steempeak.app', 'tasteem.app', 'typeearn', 'ulogs.app', 'wherein-io', 'drugwars.app', 'esteem-app', 'letseat.app', 'steemgg.app'];;
+const steemRevokeList = ['bravocoin','buzzi.app','steemcn.app','crowdini.app','steemplay.app', 'steemerapp','holybread.app','engrave.app','deegram','peakmonsters.app', 'buildteam', 'busy.app', 'dclick.app', 'dpoll.xyz', 'esteem-app', 'partiko-steemcon', 'steemauto', 'tasteem.app', 'nextcolony', 'share2steem', 'steemhunt.com', 'steemstem-app', 'fundition.app', 'trailbase', 'typeearn', 'smartsteem', 'steemknights', "dlive.app", "dreply", "ntopaz-artisteem", "steem-recipe"];
+const hiveRevokeList = ['cn-trail', 'busy.app', 'partiko-steemcon', 'steem2hive', 'steemcn.app', 'dclick.app', 'dlive.app', 'dpoll.xyz', 'dreply', 'fundition.app', 'ntopaz-artisteem', 'steem-recipe', 'steemhunt.com', 'steempeak.app', 'tasteem.app', 'typeearn', 'ulogs.app', 'wherein-io', 'drugwars.app', 'esteem-app', 'letseat.app', 'steemgg.app','steem-drivers','steemerapp','crowdini.app','deegram','dlike.app','steeditor.app','steemplay.app'];;
 let previousChain = "STEEM";
 
 $(document).ready(async function () {
@@ -31,7 +31,7 @@ $(document).ready(async function () {
         let activeKey = $('#active_key').val().trim();
         let username = $('#username').val();
         let chain = document.getElementById('chain').value;
-        let account = await getAccount([username],chain);
+        let account = await getAccount([username], chain);
         if (chain === 'STEEM' && window.steem_keychain) {
             hasKeychain = true;
         } else if (chain === 'HIVE' && window.hive_keychain) {
@@ -50,7 +50,7 @@ $(document).ready(async function () {
             revokeList.push($(this).val());
         });
 
-        updateAccountOperation(account, authorizedList, revokeList, hasKeychain, activeKey,chain)
+        updateAccountOperation(account, authorizedList, revokeList, hasKeychain, activeKey, chain)
     });
 
 });
@@ -66,8 +66,14 @@ async function getAuthorizedListHtlm(account, chain) {
         </thead>
         <tbody>
         `;
+        let revokeList=[];
+        if(chain==='STEEM'){
+            revokeList = steemRevokeList;
+        }else if(chain === 'HIVE'){
+            revokeList = hiveRevokeList;
+        }
         for (let app of authorizedList) {
-            if (steemRevokeList.includes(app[0])) {
+            if (revokeList.includes(app[0])) {
                 htmlString += `<tr><td style="text-align:center"> <label class="form-check-label is-3" for="${app[0]}">${app[0]}</label></td>
                 <td style="text-align:center"><div class="form-check">
                 <input name="type" type="checkbox" class="big-checkbox" value="${app[0]}" id="${app[0]}" checked>
@@ -90,7 +96,7 @@ async function getAuthorizedListHtlm(account, chain) {
         }
     }
 }
-function updateAccountOperation(account, newAuthorizedList, revokeList, hasKeychain, activeKey,chain) {
+function updateAccountOperation(account, newAuthorizedList, revokeList, hasKeychain, activeKey, chain) {
     let operations = [];
     let op = [
         'account_update', {
@@ -105,7 +111,7 @@ function updateAccountOperation(account, newAuthorizedList, revokeList, hasKeych
         }
     ]
     operations.push(op);
-    sendOperations(operations, activeKey, revokeList, hasKeychain,chain);
+    sendOperations(operations, activeKey, revokeList, hasKeychain, chain);
 }
 
 function getAuthorizedList(account_auths) {
@@ -144,7 +150,7 @@ function getAccount(accounts, chain) {
 
 function sendOperations(operations, active_key, revokeList, hasKeychain, chain) {
     let username = $('#username').val();
-    if (hasKeychain && active_key === '' && chain==='STEEM') {
+    if (hasKeychain && active_key === '' && chain === 'STEEM') {
         steem_keychain.requestBroadcast(username, operations, "Active", async function (response) {
             if (response.success) {
                 $('div#notification').html(`<div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -153,7 +159,7 @@ function sendOperations(operations, active_key, revokeList, hasKeychain, chain) 
               <span aria-hidden="true">&times;</span>
             </button>
           </div>`);
-                let account = await getAccount([username],chain);
+                let account = await getAccount([username], chain);
                 getAuthorizedListHtlm(account, chain);
             } else {
                 $('div#notification').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -166,7 +172,7 @@ function sendOperations(operations, active_key, revokeList, hasKeychain, chain) 
         });
 
     }
-    else if (hasKeychain && active_key === '' && chain==='HIVE') {
+    else if (hasKeychain && active_key === '' && chain === 'HIVE') {
         hive_keychain.requestBroadcast(username, operations, "Active", async function (response) {
             if (response.success) {
                 $('div#notification').html(`<div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -175,7 +181,7 @@ function sendOperations(operations, active_key, revokeList, hasKeychain, chain) 
               <span aria-hidden="true">&times;</span>
             </button>
           </div>`);
-                let account = await getAccount([username],chain);
+                let account = await getAccount([username], chain);
                 getAuthorizedListHtlm(account, chain);
             } else {
                 $('div#notification').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -188,7 +194,7 @@ function sendOperations(operations, active_key, revokeList, hasKeychain, chain) 
         });
 
     }
-    else {
+    else if (active_key !== '' && chain === 'STEEM') {
         steem.broadcast.send(
             { operations: operations, extensions: [] },
             { active: active_key },
@@ -201,7 +207,32 @@ function sendOperations(operations, active_key, revokeList, hasKeychain, chain) 
                 </button>
               </div>`);
                     let username = $('#username').val();
-                    let account = await getAccount([username],chain);
+                    let account = await getAccount([username], chain);
+                    getAuthorizedListHtlm(account, chain);
+                } else {
+                    $('div#notification').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${err.message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>`);
+                }
+            });
+    }
+    else if (active_key !== '' && chain === 'HIVE') {
+        hive.broadcast.send(
+            { operations: operations, extensions: [] },
+            { active: active_key },
+            async function (err, result) {
+                if (result && !err) {
+                    $('div#notification').html(`<div class="alert alert-info alert-dismissible fade show" role="alert">
+                You've revoked <strong>${revokeList}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>`);
+                    let username = $('#username').val();
+                    let account = await getAccount([username], chain);
                     getAuthorizedListHtlm(account, chain);
                 } else {
                     $('div#notification').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">

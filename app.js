@@ -65,7 +65,7 @@ async function getAuthorizedListHtlm(account) {
               </div></td></tr>`;
             }
         }
-        htmlString +=`</tbody></table>`;
+        htmlString += `</tbody></table>`;
 
         if (!authorizedList.length) {
             $('div#authorized_app').html(`<div>Not authorized apps found!</div>`);
@@ -121,6 +121,7 @@ function sendOperations(operations, active_key, revokeList, hasKeychain) {
     let steemId = $('#username').val();
     if (hasKeychain && active_key === '') {
         steem_keychain.requestBroadcast(steemId, operations, "Active", async function (err, result) {
+            console.log(err,result);
             if (result && !err) {
                 $('div#notification').html(`<div class="alert alert-info alert-dismissible fade show" role="alert">
             You've revoked <strong>${revokeList}</strong>
@@ -128,7 +129,7 @@ function sendOperations(operations, active_key, revokeList, hasKeychain) {
               <span aria-hidden="true">&times;</span>
             </button>
           </div>`);
-          let account = await getAccount([steemId]);
+                let account = await getAccount([steemId]);
                 getAuthorizedListHtlm(account);
             } else {
                 $('div#notification').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">

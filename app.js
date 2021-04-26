@@ -1,4 +1,5 @@
 steem.api.setOptions({ url: 'https://api.steem.buzz' });
+hive.api.setOptions({url:'https://anyx.io'})
 const steemRevokeList = ['bravocoin','buzzi.app','steemcn.app','crowdini.app','steemplay.app', 'steemerapp','holybread.app','engrave.app','deegram','peakmonsters.app', 'buildteam', 'busy.app', 'dclick.app', 'dpoll.xyz', 'esteem-app', 'partiko-steemcon', 'steemauto', 'tasteem.app', 'nextcolony', 'share2steem', 'steemhunt.com', 'steemstem-app', 'fundition.app', 'trailbase', 'typeearn', 'smartsteem', 'steemknights', "dlive.app", "dreply", "ntopaz-artisteem", "steem-recipe"];
 const hiveRevokeList = ['cn-trail', 'busy.app', 'partiko-steemcon', 'steem2hive', 'steemcn.app', 'dclick.app', 'dlive.app', 'dpoll.xyz', 'dreply', 'fundition.app', 'ntopaz-artisteem', 'steem-recipe', 'steemhunt.com', 'steempeak.app', 'tasteem.app', 'typeearn', 'ulogs.app', 'wherein-io', 'drugwars.app', 'esteem-app', 'letseat.app', 'steemgg.app','steem-drivers','steemerapp','crowdini.app','deegram','dlike.app','steeditor.app','steemplay.app'];;
 let previousChain = "STEEM";
